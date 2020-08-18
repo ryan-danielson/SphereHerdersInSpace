@@ -15,11 +15,11 @@ char *PLAYER2           = "tiles/player2.png";
 char *TILE1             = "tiles/tile4.png";
 char *TILE2             = "tiles/tile5.png";
 char *TILE3             = "tiles/tile6.png";
-char *TILE4             = "tiles/tile3.png";
+char *TILE4             = "tiles/tile8.png";
 char *TILE5             = "tiles/tile7.png";
 char *TILE6             = "tiles/tile11.png";
 char *ENEMY             = "tiles/enemy.png";
-
+char *BLANK             = "tiles/blank.png";
 SDL_Window *window;
 
 
@@ -139,9 +139,9 @@ main(int argc, char *args[])
 	        return 1;
         }
 
-        int map[dimensions.y][dimensions.x];
+        MapTile map[dimensions.y][dimensions.x];
 
-        if (!mapReader(p, dimensions, map)) {
+        if (!mapReader(p, dimensions, map, gRenderer, x, y)) {
 	        puts("error reading map");
 	        return 1;
         }
@@ -152,12 +152,12 @@ main(int argc, char *args[])
     
         /* print map and player starting position */
         SDL_RenderCopy(gRenderer, mapBackground, NULL, backRect); 
-    
-        if (!mapDraw(gRenderer, tileRect, mapTiles, dimensions, map, x, y)) {
+        puts("debug 2.5"); 
+        if (!mapDraw(gRenderer, dimensions, map, x, y)) {
 	        puts("Tile are empty in mapMaker()");
 	        return 1;
         }	
-
+        puts("debug 3");
         gCurrentTexture = gKeyPressTextures[KEY_PRESS_SURFACE_DEFAULT];
         gEnemyTexture   = mapTiles[6];
         placeObject(gRenderer, gCurrentTexture, toIsometric(playerRect));
@@ -191,7 +191,7 @@ main(int argc, char *args[])
         temp.x = playerRect->x; 
 
         boundaryCheck(enemyPositionTracker, dimensions, map);
-        SDL_Delay(6000);
+        
         while (!quit) {        
 	        int direction[4] = { 0, 0, 0, 0 };
                 int *xPtr = &x;
@@ -210,12 +210,6 @@ main(int argc, char *args[])
 	        const Uint8* currentKeyStates = SDL_GetKeyboardState(NULL);
                 
                 puts(" ");
-                /* [0] = left
-                 * [1] = up
-                 * [2] = down
-                 * [3] = right
-                 */
-
                
                 /* assign direction */
 
@@ -245,7 +239,7 @@ main(int argc, char *args[])
                               //  enemyRect->x += 64-i;
                                 enemyRect->y += 64-i;
                                                
-                                drawScreen(gRenderer, backRect, tileRect, playerRect, enemyRect, gCurrentTexture, mapTiles, mapBackground, dimensions, map, xPtr, yPtr);
+                                drawScreen(gRenderer, backRect, playerRect, enemyRect, gCurrentTexture, mapTiles, mapBackground, dimensions, map, xPtr, yPtr);
                         }
                 } else if (currentKeyStates[SDL_SCANCODE_LSHIFT]) {
                         gCurrentTexture = gKeyPressTextures[KEY_PRESS_SURFACE_SHIFT];
@@ -256,7 +250,7 @@ main(int argc, char *args[])
 	        }	        
                 
 		/* clear screen to redraw map */   
-                drawScreen(gRenderer, backRect, tileRect, playerRect, enemyRect,  gCurrentTexture, mapTiles, mapBackground, dimensions, map, xPtr, yPtr);
+                drawScreen(gRenderer, backRect, playerRect, enemyRect,  gCurrentTexture, mapTiles, mapBackground, dimensions, map, xPtr, yPtr);
                 
                 
         }                

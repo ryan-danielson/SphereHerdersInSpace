@@ -12,7 +12,7 @@ enemyMovement(SDL_Rect *someEnemy)
 }
 
 int
-playerMovement(SDL_Rect *playerPositionTracker, SDL_Rect *enemyPositionTracker, SDL_Rect *enemyRect, int direction[4], int *x, int *y, MapSize dimensions, int map[][dimensions.x], SDL_Texture **gCurrentTexture, SDL_Texture **gKeyPressTextures[KEY_PRESS_TEXTURE_TOTAL])
+playerMovement(SDL_Rect *playerPositionTracker, SDL_Rect *enemyPositionTracker, SDL_Rect *enemyRect, int direction[4], int *x, int *y, MapSize dimensions, MapTile map[][dimensions.x], SDL_Texture **gCurrentTexture, SDL_Texture **gKeyPressTextures[KEY_PRESS_TEXTURE_TOTAL])
 {
         printf("  %d\n%d   %d\n  %d\n\n", direction[1], direction[0], direction[3], direction[2]);
         /* check direction values and then check boundaries of that move */
@@ -83,34 +83,20 @@ playerMovement(SDL_Rect *playerPositionTracker, SDL_Rect *enemyPositionTracker, 
                         gCurrentTexture = gKeyPressTextures[KEY_PRESS_SURFACE_LEFT];
                         enemyRect->x += 16;
                         enemyRect->y += 8;
-                        if (boundaryCheck(tempEnemy, dimensions, map)) {
-                                //enemyPositionTracker->x -= 16; 
-                                //enemyRect->x += 32;
-                        }
-
                 }
                 if (direction[UP] == 1) {
                         *y += 16;
                         playerPositionTracker->y -= 16;
                         gCurrentTexture = gKeyPressTextures[KEY_PRESS_SURFACE_UP];
-                        enemyRect->y += 16;
+                        enemyRect->y += 8;
                         enemyRect->x -= 16;
-                        if (boundaryCheck(tempEnemy, dimensions, map)) {
-                        //        enemyPositionTracker->y += 16;
-                        //        enemyRect->y += 16;
-                        }
-
                 } 
                 if (direction[DOWN] == 1) {
                         *y -= 16;
                         playerPositionTracker->y += 16;
                         gCurrentTexture = gKeyPressTextures[KEY_PRESS_SURFACE_DOWN];
-                        enemyRect->y -= 16;
+                        enemyRect->y -= 8;
                         enemyRect->x += 16;
-                        if (boundaryCheck(tempEnemy, dimensions, map)) {
-                        //        enemyPositionTracker->y -= 16;
-                        //        enemyRect->y -= 16;
-                        }
                 } 
                 if (direction[RIGHT] == 1) {
                         *x -= 16;
@@ -118,11 +104,6 @@ playerMovement(SDL_Rect *playerPositionTracker, SDL_Rect *enemyPositionTracker, 
                         gCurrentTexture = gKeyPressTextures[KEY_PRESS_SURFACE_RIGHT];
                         enemyRect->y -= 8;
                         enemyRect->x -= 16;
-                /*        if (boundaryCheck(tempEnemy, dimensions, map)) {
-                                enemyPositionTracker->x -= 16;
-                                enemyRect->x -= 32;
-                        }*/
-
                 }
 
                 return 1; 
@@ -231,12 +212,17 @@ playerMovement(SDL_Rect *playerPositionTracker, SDL_Rect *enemyPositionTracker, 
 }
 
 _Bool
-boundaryCheck(SDL_Rect someObject, MapSize dimensions, int map[][dimensions.x])
+boundaryCheck(SDL_Rect someObject, MapSize dimensions, MapTile map[][dimensions.x])
 {
-	printf("playerRect[%d][%d], map: %d\n", someObject.y/64, someObject.x/128, map[someObject.y/64][someObject.x/128]);
-
-	if (someObject.x < 0 || someObject.x/128 >= dimensions.x || someObject.y/64 < 0 || someObject.y/64 >= dimensions.y || map[someObject.y/64][someObject.x/128] != 0)
-		return 0;
+	printf("playerRect[%d][%d]\n", someObject.y/64, someObject.x/128);
+	if (someObject.x < 0 || someObject.x/128 >= dimensions.x || someObject.y/64 < 0 || someObject.y/64 >= dimensions.y || map[someObject.y/64][someObject.x/128].boundary == 1)
+		return 0; 
+/*        for (int k = 0; k < dimensions.y; ++k) {
+                for (int i = 0; i < dimensions.x; ++i) { 
+                        if (SDL_HasIntersection(toIsometric(&someObject), toIsometric(&map[k][i].rect)) && map[k][i].boundary == 1)
+                                return 0;
+                }
+        }*/
 	puts("No boundary");
 	return 1;
 }
