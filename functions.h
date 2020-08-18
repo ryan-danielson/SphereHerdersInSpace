@@ -14,6 +14,7 @@ extern char *TILE4;
 extern char *TILE5;
 extern char *TILE6;
 extern char *ENEMY;
+extern char *BLANK;
 extern SDL_Window *window;
 
 enum KeyPressSurfaces
@@ -47,22 +48,28 @@ struct MapSize
 };
 typedef struct MapSize MapSize;
 
+struct MapTile
+{
+        SDL_Rect rect;
+        int boundary;
+        SDL_Texture *texture;
+};
+typedef struct MapTile MapTile;
+
 /* function prototypes */
 
 SDL_Window *init(SDL_Renderer **gRenderer);
 _Bool loadMedia(SDL_Texture **gKeyPressTextures, SDL_Renderer **gRenderer, SDL_Texture **mapTiles);
 SDL_Texture *loadTexture(char *somePath, SDL_Renderer **gRenderer);
 MapSize mapDimensions(FILE *p);
-_Bool mapReader(FILE *p, MapSize dimensions, int map[][dimensions.x]);
+_Bool mapReader(FILE *p, MapSize dimensions, MapTile map[][dimensions.x], SDL_Renderer *gRenderer, int x, int y);
 void cleanBuffer();
-_Bool mapDraw(SDL_Renderer *gRenderer, SDL_Rect *tileRect, SDL_Texture **mapTiles, MapSize dimensions, int map[][dimensions.x], int x, int y);
+_Bool mapDraw(SDL_Renderer *gRenderer, MapSize dimensions, MapTile map[][dimensions.x], int x, int y);
 void placeObject(SDL_Renderer *gRenderer, SDL_Texture *objectTexture, SDL_Rect *objectRect);
 SDL_Rect *toIsometric(SDL_Rect *cartRect);
 void enemyMovement(SDL_Rect *someEnemy);
-int playerMovement(SDL_Rect *playerPositionTracker, SDL_Rect *enemyPositionTracker, SDL_Rect *enemyRect, int direction[4], int *x, int *y, MapSize dimensions, int map[][dimensions.x], SDL_Texture **gCurrentTexture, SDL_Texture **gKeyPressTextures[KEY_PRESS_TEXTURE_TOTAL]);
-_Bool boundaryCheck(SDL_Rect someObject, MapSize dimensions, int map[][dimensions.x]);
-void drawScreen(SDL_Renderer *gRenderer, SDL_Rect *backRect, SDL_Rect *tileRect, SDL_Rect *playerRect, SDL_Rect *enemyRect, SDL_Texture *gCurrentTexture, SDL_Texture *mapTiles[7], SDL_Texture *mapBackground, MapSize dimensions, int map[][dimensions.x], int *x, int *y);
+int playerMovement(SDL_Rect *playerPositionTracker, SDL_Rect *enemyPositionTracker, SDL_Rect *enemyRect, int direction[4], int *x, int *y, MapSize dimensions, MapTile map[][dimensions.x], SDL_Texture **gCurrentTexture, SDL_Texture **gKeyPressTextures[KEY_PRESS_TEXTURE_TOTAL]);
+_Bool boundaryCheck(SDL_Rect someObject, MapSize dimensions, MapTile map[][dimensions.x]);
+void drawScreen(SDL_Renderer *gRenderer, SDL_Rect *backRect, SDL_Rect *playerRect, SDL_Rect *enemyRect, SDL_Texture *gCurrentTexture, SDL_Texture *mapTiles[TOTAL_TILES], SDL_Texture *mapBackground, MapSize dimensions, MapTile map[][dimensions.x], int *x, int *y);
 void end(SDL_Window *window, SDL_Texture **gKeyPressTextures, SDL_Texture **mapTiles);
-
-
 #endif
