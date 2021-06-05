@@ -107,17 +107,13 @@ main(int argc, char *args[])
         /* create window */
         window = init(&gRenderer);
         screenSurface = SDL_GetWindowSurface(window);
-        
-        puts("Debug 1");
 
-        puts("Debug 2");
-        if (window == NULL) {
+        if (!window) {
 	        puts("Window could not be initialized");
 	        return 1;
         }
 
          /* load media to window */
-        puts("loading media");
         if (!loadMedia(&gKeyPressTextures[0], &gRenderer, &mapTiles[0])) {
 	        puts("Failed to load media.");
 	        return 1;
@@ -130,7 +126,7 @@ main(int argc, char *args[])
         /* open and close tile map */
 
         FILE *p = fopen("maps/tilemap.txt", "rw+");
-        if (p == NULL)
+        if (!p)
 	        puts("Error opening tilemap");
     
         MapSize dimensions = mapDimensions(p);
@@ -147,17 +143,16 @@ main(int argc, char *args[])
         }
 
         fclose(p);
-        puts("Media loaded");
         cleanBuffer();
     
         /* print map and player starting position */
         SDL_RenderCopy(gRenderer, mapBackground, NULL, backRect); 
-        puts("debug 2.5"); 
+
         if (!mapDraw(gRenderer, dimensions, map, x, y)) {
 	        puts("Tile are empty in mapMaker()");
 	        return 1;
         }	
-        puts("debug 3");
+
         gCurrentTexture = gKeyPressTextures[KEY_PRESS_SURFACE_DEFAULT];
         gEnemyTexture   = mapTiles[6];
         placeObject(gRenderer, gCurrentTexture, toIsometric(playerRect));
@@ -216,6 +211,7 @@ main(int argc, char *args[])
                 if (currentKeyStates[SDL_SCANCODE_W] || currentKeyStates[SDL_SCANCODE_UP]) {
                         direction[UP] = 1;
                 }
+ 
                 if (currentKeyStates[SDL_SCANCODE_S] || currentKeyStates[SDL_SCANCODE_DOWN]) {
                         direction[DOWN] = 1;
                 }
